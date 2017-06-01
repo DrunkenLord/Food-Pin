@@ -8,6 +8,8 @@
 
 import UIKit
 
+var restaurantIsVisited = Array(repeating: false, count: 21)
+
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
@@ -27,7 +29,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var restaurantTypes = ["Coffee & Tea Shop", "Cafe", "Tea House", "Austrian / Causual Drink", "French", "Bakery", "Bakery", "Chocolate", "Cafe", "American / Seafood", "American", "American", "Breakfast & Brunch", "Coffee & Tea", "Coffee & Tea", "Latin American", "Spanish", "Spanish", "Spanish", "British", "Thai"]
     
-    var restaurantIsVisited = Array(repeating: false, count: 21)
+//    var restaurantIsVisited = Array(repeating: false, count: 21)
 
     
     override func viewDidLoad() {
@@ -106,7 +108,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Delete", handler: { (actioh, indexPath) -> Void in
             
             self.restaurantNames.remove(at: indexPath.row)
-            self.restaurantIsVisited.remove(at: indexPath.row)
+            restaurantIsVisited.remove(at: indexPath.row)
             self.restaurantTypes.remove(at: indexPath.row)
             self.restaurantLocations.remove(at: indexPath.row)
             self.restaurantImages.remove(at: indexPath.row)
@@ -124,39 +126,82 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return 80
     }
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //Create an option menu as an actionSheet
-        let optionMenu = UIAlertController(title: nil, message: "What do you want to do?", preferredStyle: .actionSheet)
-        //Add actions to the menu 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        optionMenu.addAction(cancelAction)
-        //Display the menu
-        present(optionMenu, animated: true, completion: nil)
-        //adding some options to the action sheet
-        // the whole thing inside the braces is known as the closure. Yeah bitch Harvey specter style :p
-        let callActionHandler = { (action: UIAlertAction) -> Void in
-            let alertMessage = UIAlertController(title: "Service Unavailable", message: "Sorry. The call feature is not available right now. Please try agian later.", preferredStyle: .alert)
-            alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alertMessage, animated: true, completion: nil)
-        }
-        
-        let callAction = UIAlertAction(title: "Call" + "123-000-\(indexPath.row)", style: .default, handler: callActionHandler)
-        optionMenu.addAction(callAction)
-        
-        let checkAction = UIAlertAction(title: "Checked In", style: .default, handler:{
-            (action:UIAlertAction) -> Void in
-            
-            let cell = tableView.cellForRow(at: indexPath)
-            cell?.accessoryType = .checkmark
-            self.restaurantIsVisited[indexPath.row] = true
-            
-        })
-        optionMenu.addAction(checkAction)
+//        //Create an option menu as an actionSheet
+//        let optionMenu = UIAlertController(title: nil, message: "What do you want to do?", preferredStyle: .actionSheet)
+//        //Add actions to the menu 
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//        optionMenu.addAction(cancelAction)
+//        //Display the menu
+//        present(optionMenu, animated: true, completion: nil)
+//        //adding some options to the action sheet
+//        // the whole thing inside the braces is known as the closure. Yeah bitch Harvey specter style :p
+//        let callActionHandler = { (action: UIAlertAction) -> Void in
+//            let alertMessage = UIAlertController(title: "Service Unavailable", message: "Sorry. The call feature is not available right now. Please try agian later.", preferredStyle: .alert)
+//            alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//            self.present(alertMessage, animated: true, completion: nil)
+//        }
+//        
+//        let callAction = UIAlertAction(title: "Call" + "123-000-\(indexPath.row)", style: .default, handler: callActionHandler)
+//        optionMenu.addAction(callAction)
+//        
+//        var checkTitle: String
+//        if restaurantIsVisited[indexPath.row] == true{
+//            checkTitle = "Undo Check"
+//        }
+//        else{
+//            checkTitle = "Check In"
+//        }
+//        let checkAction = UIAlertAction(title: checkTitle, style: .default, handler:{
+//            (action:UIAlertAction) -> Void in
+//            
+//            let cell = tableView.cellForRow(at: indexPath)
+//            if checkTitle == "Check In"
+//            {
+//                cell?.accessoryType = .checkmark
+//                self.restaurantIsVisited[indexPath.row] = true
+//            }
+//            else
+//            {
+//                cell?.accessoryType = .none
+//                self.restaurantIsVisited[indexPath.row] = false
+//            }
+//            
+//        })
+//        //Different way to implement the code 
+//        /*
+//         let checkInTitle = restaurantIsVisited[indexPath.row] ? "Undo Check in" : "Check in"
+//         let checkInAction = UIAlertAction(title: checkInTitle, style: .default, handler: {
+//         (action:UIAlertAction!) -> Void in
+//         
+//         let cell = tableView.cellForRow(at: indexPath)
+//         
+//         // Toggle check-in and undo-check-in
+//         self.restaurantIsVisited[indexPath.row] = self.restaurantIsVisited[indexPath.row] ? false : true
+//         cell?.accessoryType = self.restaurantIsVisited[indexPath.row] ? .checkmark : .none
+//         */
+//        optionMenu.addAction(checkAction)
         
         tableView.deselectRow(at: indexPath, animated: false)
         
         
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showRestaurantDetail"
+        {
+            if let indexPath = tableView.indexPathForSelectedRow{
+            let destinationController = segue.destination as! RestaurantDetailViewController
+                destinationController.imageOfRestaurant = restaurantImages[indexPath.row]
+                destinationController.nameOfRestaurant = restaurantNames[indexPath.row]
+                destinationController.locationOfRestaurant = restaurantLocations[indexPath.row]
+                destinationController.typeOfRestaurant = restaurantTypes[indexPath.row]
+                destinationController.rowNumber = indexPath.row
+                destinationController.cellNumber = tableView.cellForRow(at: indexPath)
+            }
+        }
     }
 
 
