@@ -21,7 +21,8 @@ class RestaurantTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
+    //Will have to add so many features
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
